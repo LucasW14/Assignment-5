@@ -24,8 +24,86 @@ form.addEventListener("submit", getRepos);
 const gallery = document.getElementById("gallery");
 
 
+
+function regular(event) {
+
+
+
+    let params = new FormData(document.getElementById("search"));
+    let object = Object.fromEntries(params);
+    let username = object.name;
+    const apiUrl = "https://api.github.com/users/LucasW14/repos";
+
+    fetch(apiUrl)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            repos = response.json()
+
+            return repos;
+        })
+        .then((data) => { console.log(data); return data; })
+        .then((repos) => {
+
+            repos.slice(0, 10).forEach(repo => {
+
+                const card = document.createElement("div");
+                card.classList.add("repo-card")
+
+                const languages = repo.languages_url;
+
+
+                card.innerHTML = `
+            <i class="fa-brands fa-github"><a href="${repo.html_url}"><Strong>${repo.full_name}</Strong></a></i>
+           <div class="repo-info"><Strong>Description: </Strong>${repo.description}</div>
+           <div class="repo-info"><Strong>Created: </Strong>${repo.created_at}</div>
+           <div class="repo-info"><Strong>Updated At: </Strong>${repo.updated_at}</div>
+           <div class="repo-info"><Strong>Watchers: </Strong>${repo.watchers_count}</div>
+           <div class="repo-info"><Strong>Languages: </Strong></div>
+
+
+        `;
+
+            fetch(languages)
+  .then(res => res.json())
+  .then(data => {
+
+
+      for (let lang in data) {
+          const p = document.createElement("p");
+          p.textContent = `${lang}`;
+          card.appendChild(p);
+      }
+
+  });
+                
+
+                gallery.appendChild(card);
+
+            });
+
+        })
+
+        .then((repoData) => {
+            // Process the retrieved repo data
+            console.log("Repos resolved: My Repo Data:", repoData);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+
+
+}
+regular();
+
+
+
+
 // Make a GET request using the Fetch API
 function getRepos(event) {
+    gallery.innerHTML = ""; // removes all repo cards
 
     event.preventDefault(); // stops page refresh
 
@@ -45,7 +123,7 @@ function getRepos(event) {
 
             return repos;
         })
-        .then((data) => {console.log(data); return data;})
+        .then((data) => { console.log(data); return data; })
         .then((repos) => {
 
             repos.slice(0, 10).forEach(repo => {
@@ -53,12 +131,33 @@ function getRepos(event) {
                 const card = document.createElement("div");
                 card.classList.add("repo-card")
 
+                const languages = repo.languages_url;
+
 
                 card.innerHTML = `
-            <h1><Strong>${repo.full_name}<Strong></h1>
-            <Strong>Created: <Strong>${repo.created_at}
+            <i class="fa-brands fa-github"><a href="${repo.html_url}"><Strong>${repo.full_name}</Strong></a></i>
+           <div class="repo-info"><Strong>Description: </Strong>${repo.description}</div>
+           <div class="repo-info"><Strong>Created: </Strong>${repo.created_at}</div>
+           <div class="repo-info"><Strong>Updated At: </Strong>${repo.updated_at}</div>
+           <div class="repo-info"><Strong>Watchers: </Strong>${repo.watchers_count}</div>
+           <div class="repo-info"><Strong>Languages: </Strong></div>
+
+
         `;
 
+            fetch(languages)
+  .then(res => res.json())
+  .then(data => {
+
+
+      for (let lang in data) {
+          const p = document.createElement("p");
+          p.textContent = `${lang}`;
+          card.appendChild(p);
+      }
+
+  });
+                
 
                 gallery.appendChild(card);
 
